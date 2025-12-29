@@ -3,9 +3,8 @@
 namespace Tabby\Checkout\Model\Api\Tabby;
 
 use Magento\Framework\Exception\LocalizedException;
-use Tabby\Checkout\Exception\NotFoundException;
-use Tabby\Checkout\Model\Api\Tabby;
 use Tabby\Checkout\Model\Api\Http\Method as HttpMethod;
+use Tabby\Checkout\Model\Api\Tabby;
 
 class Checkout extends Tabby
 {

@@ -17,19 +17,19 @@ class CaptureOn implements \Magento\Framework\Option\ArrayInterface
         return [
             [
                 'value' => 'order',
-                'label' => __('Order placed')
+                'label' => __('Order placed'),
             ],
             [
                 'value' => 'invoice',
-                'label' => __('Invoice')
+                'label' => __('Invoice'),
             ],
             [
                 'value' => 'shipment',
-                'label' => __('Shipment')
+                'label' => __('Shipment'),
             ],
             [
                 'value' => 'nocapture',
-                'label' => __('No Capture')
+                'label' => __('No Capture'),
             ],
         ];
     }

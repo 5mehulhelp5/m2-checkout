@@ -11,14 +11,16 @@ if ($block->isPromotionsActiveForCart()):
             }
         }
 
-        require(['https://checkout.tabby.ai/tabby-promo.js', 'Magento_Checkout/js/model/quote'], function (tPromo, quote) {
-            function updateTabbyTotal(totals) {
-                let price = parseFloat(totals.grand_total);
-                updateTabbyPromotions(price);
-            };
-            quote.getTotals().subscribe(updateTabbyTotal);
-            updateTabbyTotal(quote.getTotals()());
-        });
+        require(['https://checkout.tabby.ai/tabby-promo.js', 'Magento_Checkout/js/model/quote'],
+            function (tPromo, quote) {
+                function updateTabbyTotal(totals) {
+                    let price = parseFloat(totals.grand_total);
+                    updateTabbyPromotions(price);
+                };
+                quote.getTotals().subscribe(updateTabbyTotal);
+                updateTabbyTotal(quote.getTotals()());
+            }
+        );
     </script>
     <div id="tabbyPromo">
     </div>

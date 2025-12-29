@@ -2,20 +2,10 @@
 
 namespace Tabby\Checkout\Model\Checkout\Payment;
 
-use Magento\Catalog\Helper\Image;
-use Magento\Checkout\Model\Session;
-use Tabby\Checkout\Model\Checkout\Payment\BuyerHistory;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Session\SessionManagerInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
-use Magento\Store\Model\StoreManagerInterface;
 use Tabby\Checkout\Gateway\Config\Config;
-use Magento\Checkout\Model\ConfigProviderInterface;
-use Magento\Framework\Session\SessionManagerInterface;
-use Magento\Framework\View\Asset\Repository;
-use Magento\Framework\App\RequestInterface;
-use Magento\Framework\Locale\Resolver;
 
 class OrderHistory
 {
@@ -47,7 +37,7 @@ class OrderHistory
     protected const STATUS_MAP = [
         'complete' => 'complete',
         'closed' => 'refunded',
-        'canceled' => 'canceled'
+        'canceled' => 'canceled',
     ];
 
     /**
@@ -97,7 +87,7 @@ class OrderHistory
         if ($customer && $customer->getId()) {
             $attributes[] = [
                 'attribute' => 'main_table.customer_id',
-                'eq' => $customer->getId()
+                'eq' => $customer->getId(),
             ];
             if (!$email) {
                 $email = $customer->getEmail();
@@ -114,7 +104,7 @@ class OrderHistory
         if ($email) {
             $attributes[] = [
                 'attribute' => 'customer_email',
-                'eq' => $email
+                'eq' => $email,
             ];
         }
         if ($phone && $this->config->getValue(Config::KEY_ORDER_HISTORY_USE_PHONE)) {
@@ -124,11 +114,11 @@ class OrderHistory
 
             $attributes[] = [
                 'attribute' => 'shipping_o_a.telephone',
-                'in' => $phone
+                'in' => $phone,
             ];
             $attributes[] = [
                 'attribute' => 'billing_o_a.telephone',
-                'in' => $phone
+                'in' => $phone,
             ];
         }
 
@@ -212,7 +202,7 @@ class OrderHistory
             'payment_method' => $order->getPayment()->getMethod(),
             'purchased_at' => date(\DateTime::RFC3339, strtotime($order->getCreatedAt())),
             'shipping_address' => $this->getOrderShippingAddressObject($order),
-            'status' => $tabbyStatus
+            'status' => $tabbyStatus,
         ];
         return $o;
     }
@@ -228,7 +218,7 @@ class OrderHistory
         return [
             'name' => $order->getCustomerName(),
             'email' => $order->getCustomerEmail(),
-            'phone' => $this->getOrderCustomerPhone($order)
+            'phone' => $this->getOrderCustomerPhone($order),
         ];
     }
 
@@ -268,7 +258,7 @@ class OrderHistory
                 'shipped' => (int)$item->getQtyShipped(),
                 'title' => $item->getName(),
                 'unit_price' => $this->formatPrice($item->getPriceInclTax()),
-                'tax_amount' => $this->formatPrice($item->getTaxAmount())
+                'tax_amount' => $this->formatPrice($item->getTaxAmount()),
             ];
         }
         return $result;
@@ -285,15 +275,15 @@ class OrderHistory
         if ($order->getShippingAddress()) {
             return [
                 'address' => implode(PHP_EOL, $order->getShippingAddress()->getStreet()),
-                'city' => $order->getShippingAddress()->getCity()
+                'city' => $order->getShippingAddress()->getCity(),
             ];
         } elseif ($order->getBillingAddress()) {
             return [
                 'address' => implode(PHP_EOL, $order->getBillingAddress()->getStreet()),
-                'city' => $order->getBillingAddress()->getCity()
+                'city' => $order->getBillingAddress()->getCity(),
             ];
 
-        };
+        }
         return null;
     }
 

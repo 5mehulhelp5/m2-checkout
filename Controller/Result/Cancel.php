@@ -5,11 +5,11 @@ namespace Tabby\Checkout\Controller\Result;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\UrlInterface;
 use Tabby\Checkout\Helper\Order;
-use Magento\Framework\App\ResponseInterface;
-use Magento\Framework\Controller\Result\Redirect;
 
 class Cancel extends Action
 {
@@ -47,7 +47,7 @@ class Cancel extends Action
         $this->_urlInterface = $urlInterface;
         $this->_checkoutSession = $checkoutSession;
         $this->_orderHelper = $orderHelper;
-        
+
         parent::__construct($context);
     }
 

@@ -9,6 +9,6 @@ class LogoColor extends ConstantArray
 {
     protected const VALUES = [
         'green' => 'Green',
-        'black' => 'Black'
+        'black' => 'Black',
     ];
 }

@@ -5,21 +5,20 @@
 namespace Tabby\Checkout\Model\Ui;
 
 use Magento\Catalog\Helper\Image;
+use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Checkout\Model\Session;
-use Tabby\Checkout\Model\Checkout\Payment\BuyerHistory;
-use Tabby\Checkout\Model\Checkout\Payment\OrderHistory;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Locale\Resolver;
+use Magento\Framework\Session\SessionManagerInterface;
 use Magento\Framework\UrlInterface;
-use Magento\Sales\Model\ResourceModel\Order\Collection;
+use Magento\Framework\View\Asset\Repository;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
 use Magento\Store\Model\StoreManagerInterface;
 use Tabby\Checkout\Gateway\Config\Config;
-use Magento\Checkout\Model\ConfigProviderInterface;
-use Magento\Framework\Session\SessionManagerInterface;
-use Magento\Framework\View\Asset\Repository;
-use Magento\Framework\App\RequestInterface;
-use Magento\Framework\Locale\Resolver;
+use Tabby\Checkout\Model\Checkout\Payment\BuyerHistory;
+use Tabby\Checkout\Model\Checkout\Payment\OrderHistory;
 
 /**
  * Config Provider for checkout front-end
@@ -157,18 +156,20 @@ class ConfigProvider implements ConfigProviderInterface
                     'storeGroupCode' => $this->storeManager->getGroup()->getCode(),
                     'lang' => $this->resolver->getLocale(),
                     'urls' => $this->getQuoteItemsUrls(),
-                    'methods' => $this->_getMethodsAdditionalInfo()
-                ]
-            ]
+                    'methods' => $this->_getMethodsAdditionalInfo(),
+                ],
+            ],
         ];
     }
 
     /**
      * Provides additional configuration for payment methods
      *
+     * @param string $method
      * @return bool
      */
-    private function getShouldInheritBg($method) {
+    private function getShouldInheritBg($method)
+    {
         return (bool)$this->config->getScopeConfig()->getValue(
             'payment/' . $method . '/inherit_bg',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
@@ -201,7 +202,7 @@ class ConfigProvider implements ConfigProviderInterface
                     'payment/' . $method . '/description_type',
                     \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
                     $this->session->getStoreId()
-                ) == 1 ? 'narrow' : 'wide'
+                ) == 1 ? 'narrow' : 'wide',
             ];
         }
         return $result;
@@ -240,7 +241,7 @@ class ConfigProvider implements ConfigProviderInterface
             $result[$item->getId()] = [
                 'image_url' => $image->getUrl(),
                 'product_url' => $product->getUrlInStore(),
-                'category' => $category_name
+                'category' => $category_name,
             ];
         }
         return $result;
@@ -273,7 +274,7 @@ class ConfigProvider implements ConfigProviderInterface
                 $params
             ),
             'merchantUrls'      => $this->getMerchantUrls(),
-            'useRedirect'       => 1
+            'useRedirect'       => 1,
         ];
 
         if ($this->config->getValue('use_history', $this->session->getStoreId()) === 'no') {
@@ -293,7 +294,7 @@ class ConfigProvider implements ConfigProviderInterface
         return [
             "success" => $this->urlInterface->getUrl('tabby/result/success'),
             "cancel" => $this->urlInterface->getUrl('tabby/result/cancel'),
-            "failure" => $this->urlInterface->getUrl('tabby/result/failure')
+            "failure" => $this->urlInterface->getUrl('tabby/result/failure'),
         ];
     }
 
@@ -305,14 +306,6 @@ class ConfigProvider implements ConfigProviderInterface
     private function getPaymentObject()
     {
         $payment = [];
-        // No need anymore on front end
-        //$orderHistory = $this->orderHistory->getOrderHistoryObject($this->checkoutSession->getQuote()->getCustomer());
-        //$payment['order_history'] = $this->orderHistory->limitOrderHistoryObject($orderHistory);
-        //$payment['buyer_history'] = $this->buyerHistory->getBuyerHistoryObject(
-            //$this->checkoutSession->getQuote()->getCustomer(),
-            //$orderHistory
-        //);
-        //$payment['meta'] = $this->config->getPaymentObjectMetaFields();
         return $payment;
     }
 }

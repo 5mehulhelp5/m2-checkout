@@ -1,7 +1,7 @@
 <?php
 namespace Tabby\Checkout\Model\Api\Http;
 
-use \Magento\Framework\HTTP\Client\Curl;
+use Magento\Framework\HTTP\Client\Curl;
 use Tabby\Checkout\Model\Api\Http\Method as HttpMethod;
 
 class Client extends Curl

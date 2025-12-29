@@ -1,11 +1,11 @@
 <?php
 namespace Tabby\Checkout\Model\Api;
 
+use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\HTTP\ClientFactory;
 use Magento\Framework\Module\ModuleList;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\StoresConfig;
-use Magento\Framework\HTTP\ClientFactory;
-use Magento\Framework\App\ProductMetadataInterface;
 
 class DdLog
 {
@@ -80,16 +80,14 @@ class DdLog
             $log = [
                 "status" => $status,
                 "message" => $message,
-
                 "service"  => "magento2",
                 "sversion" => $this->_productMetadata->getVersion(),
                 "sedition" => $this->_productMetadata->getEdition(),
                 "hostname" => $storeHost,
                 "settings" => $this->getModuleSettings(),
                 "code" => $this->_storeManager->getStore()->getCode(),
-
                 "ddsource" => "php",
-                "ddtags" => sprintf("env:prod,version:%s", $moduleInfo["setup_version"])
+                "ddtags" => sprintf("env:prod,version:%s", $moduleInfo["setup_version"]),
             ];
 
             if ($e) {
@@ -137,7 +135,7 @@ class DdLog
                      'tabby/tabby_api' => 'Tabby Api',
                      'payment/tabby_checkout' => 'Pay Later',
                      'payment/tabby_installments' => 'Installments',
-                     'payment/tabby_cc_installments' => 'CC Installments'
+                     'payment/tabby_cc_installments' => 'CC Installments',
                  ] as $path => $name) {
             $config = $this->_storesConfig->getStoresConfigByPath($path);
             foreach ($stores as $store) {

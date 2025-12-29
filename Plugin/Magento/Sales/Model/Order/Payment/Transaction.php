@@ -8,7 +8,7 @@ class Transaction
      * Update parent_id to null before transaction close called (in order to avoid infinity cycle)
      *
      * @param \Magento\Sales\Model\Order\Payment\Transaction $txn
-     * @param bool? $messagePrependTo
+     * @param bool? $shouldSave
      * @return null
      */
     public function beforeClose(

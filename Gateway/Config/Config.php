@@ -2,10 +2,10 @@
 
 namespace Tabby\Checkout\Gateway\Config;
 
-use Magento\Framework\Module\ModuleList;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Quote\Api\Data\CartInterface;
 use Magento\Catalog\Model\Product;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Module\ModuleList;
+use Magento\Quote\Api\Data\CartInterface;
 use Magento\Store\Model\ScopeInterface;
 
 class Config extends \Magento\Payment\Gateway\Config\Config
@@ -28,7 +28,7 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     public const ALLOWED_SERVICES = [
         'tabby_cc_installments' => "Credit Card installments",
         'tabby_installments' => "Pay in installments",
-        'tabby_checkout' => "Pay after delivery"
+        'tabby_checkout' => "Pay after delivery",
     ];
 
     /**
@@ -88,7 +88,7 @@ class Config extends \Magento\Payment\Gateway\Config\Config
         $moduleInfo = $this->_moduleList->getOne('Tabby_Checkout');
         return [
             "tabby_plugin_platform" => 'magento',
-            "tabby_plugin_version"  => $moduleInfo["setup_version"]
+            "tabby_plugin_version"  => $moduleInfo["setup_version"],
         ];
     }
 

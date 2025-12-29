@@ -3,15 +3,12 @@
 namespace Tabby\Checkout\Controller\Result;
 
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\Controller\ResultFactory;
-use Tabby\Checkout\Controller\CsrfCompatibility;
 use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\View\Result\Layout;
-use Tabby\Checkout\Helper\Order;
 use Tabby\Checkout\Api\WebhookProcessorInterface;
-use Magento\Store\Model\StoreManagerInterface;
-use Magento\Store\Model\App\Emulation;
+use Tabby\Checkout\Controller\CsrfCompatibility;
 
 class Webhook extends CsrfCompatibility
 {
@@ -31,7 +28,7 @@ class Webhook extends CsrfCompatibility
         WebhookProcessorInterface $webhookProcessor
     ) {
         $this->webhookProcessor = $webhookProcessor;
-        
+
         parent::__construct($context);
     }
 

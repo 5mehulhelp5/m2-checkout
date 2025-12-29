@@ -17,8 +17,8 @@ use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Stdlib\StringUtils;
 use Magento\Framework\Url\EncoderInterface;
 use Magento\Store\Model\ScopeInterface;
-use Tabby\Checkout\Gateway\Config\Config;
 use Tabby\Checkout\Api\MerchantCodeProviderInterface;
+use Tabby\Checkout\Gateway\Config\Config;
 
 class Promotion extends View
 {
@@ -323,7 +323,7 @@ class Promotion extends View
             "currency" => $this->getCurrencyCode(),
             "currencyRate" => $this->getCurrencyRate(),
             // we do not set cart price, because we need to update snippet from quote totals in javascript
-            "price" => (float)$this->formatAmount($this->onShoppingCartPage ? 0 : $this->getTabbyProductPrice())
+            "price" => (float)$this->formatAmount($this->onShoppingCartPage ? 0 : $this->getTabbyProductPrice()),
         ]));
     }
 

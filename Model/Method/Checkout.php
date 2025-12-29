@@ -3,45 +3,45 @@
 namespace Tabby\Checkout\Model\Method;
 
 use Exception;
+use Magento\Catalog\Helper\Image as ImageHelper;
+use Magento\Customer\Model\ResourceModel\CustomerRepository;
+use Magento\Directory\Helper\Data as DirectoryHelper;
+use Magento\Framework\Api\AttributeValueFactory;
+use Magento\Framework\Api\ExtensionAttributesFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\DataObject;
 use Magento\Framework\DB\TransactionFactory;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Locale\ResolverInterface as LocaleResolver;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
+use Magento\Framework\Registry;
+use Magento\Framework\UrlInterface;
 use Magento\Payment\Block\Form;
+use Magento\Payment\Helper\Data;
 use Magento\Payment\Model\InfoInterface;
+use Magento\Payment\Model\Method\AbstractMethod;
+use Magento\Payment\Model\Method\Logger;
 use Magento\Quote\Api\Data\CartInterface;
+use Magento\Quote\Api\Data\PaymentInterface;
 use Magento\Sales\Api\Data\OrderPaymentExtensionInterface;
 use Magento\Sales\Api\Data\OrderPaymentExtensionInterfaceFactory;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
+use Magento\Sales\Helper\Data as SalesData;
+use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
 use Magento\Sales\Model\Service\InvoiceService;
 use Magento\Sales\Model\Service\OrderService;
+use Tabby\Checkout\Api\MerchantCodeProviderInterface;
 use Tabby\Checkout\Block\Info;
 use Tabby\Checkout\Exception\NotAuthorizedException;
 use Tabby\Checkout\Exception\NotFoundException;
 use Tabby\Checkout\Gateway\Config\Config;
-use Magento\Payment\Model\Method\AbstractMethod;
-use Magento\Quote\Api\Data\PaymentInterface;
-use Magento\Framework\DataObject;
-use Magento\Framework\Model\Context;
-use Magento\Framework\Registry;
-use Magento\Framework\Api\ExtensionAttributesFactory;
-use Magento\Framework\Api\AttributeValueFactory;
-use Magento\Payment\Helper\Data;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Payment\Model\Method\Logger;
-use Magento\Framework\Model\ResourceModel\AbstractResource;
-use Magento\Framework\Data\Collection\AbstractDb;
-use Magento\Directory\Helper\Data as DirectoryHelper;
 use Tabby\Checkout\Model\Api\DdLog;
-use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
-use Magento\Sales\Helper\Data as SalesData;
-use Tabby\Checkout\Model\Api\Tabby\Payments;
 use Tabby\Checkout\Model\Api\Tabby\Checkout as CheckoutApi;
-use Magento\Framework\UrlInterface;
-use Magento\Catalog\Helper\Image as ImageHelper;
-use Magento\Framework\Locale\ResolverInterface as LocaleResolver;
-use Tabby\Checkout\Model\Checkout\Payment\OrderHistory;
+use Tabby\Checkout\Model\Api\Tabby\Payments;
 use Tabby\Checkout\Model\Checkout\Payment\BuyerHistory;
-use Magento\Customer\Model\ResourceModel\CustomerRepository;
-use Tabby\Checkout\Api\MerchantCodeProviderInterface;
+use Tabby\Checkout\Model\Checkout\Payment\OrderHistory;
 
 /**
  * Base class for payment processing
@@ -362,7 +362,7 @@ class Checkout extends AbstractMethod
         $info->setAdditionalInformation(
             [self::PAYMENT_ID_FIELD => $additionalData->getCheckoutId()]
         );
-        if (!is_null($additionalData->getTransactionId())) {
+        if ($additionalData->getTransactionId() !== null) {
             $info->setAdditionalInformation(
                 [self::PAYMENT_ID_FIELD => $additionalData->getTransactionId()]
             );
@@ -414,7 +414,7 @@ class Checkout extends AbstractMethod
 
         $logData = [
             "payment.id" => $id,
-            "order.reference_id" => $order->getIncrementId()
+            "order.reference_id" => $order->getIncrementId(),
         ];
 
         // check if payment authorized
@@ -432,7 +432,7 @@ class Checkout extends AbstractMethod
                 $logData = [
                     "payment.id" => $id,
                     "payment.currency" => $result->currency,
-                    "order.currency" => $order->getOrderCurrencyCode()
+                    "order.currency" => $order->getOrderCurrencyCode(),
                 ];
                 $this->_ddlog->log("error", "wrong currency code", null, $logData);
                 throw new LocalizedException(
@@ -444,7 +444,7 @@ class Checkout extends AbstractMethod
                 $logData = [
                     "payment.id" => $id,
                     "payment.amount" => $result->amount,
-                    "order.amount" => $order->getGrandTotal()
+                    "order.amount" => $order->getGrandTotal(),
                 ];
                 $this->_ddlog->log("error", "wrong transaction amount", null, $logData);
                 throw new LocalizedException(
@@ -463,7 +463,7 @@ class Checkout extends AbstractMethod
                 $logData = [
                     "payment.id" => $id,
                     "payment.amount" => $result->amount,
-                    "order.amount" => $amount
+                    "order.amount" => $amount,
                 ];
                 $this->_ddlog->log("error", "wrong transaction amount", null, $logData);
                 throw new LocalizedException(
@@ -472,7 +472,7 @@ class Checkout extends AbstractMethod
             }
         }
         $logData = [
-            "payment.id" => $id
+            "payment.id" => $id,
         ];
         $this->_ddlog->log("info", "set transaction ID", null, $logData);
         $payment->setLastTransId($payment->getAdditionalInformation(self::PAYMENT_ID_FIELD));
@@ -650,7 +650,7 @@ class Checkout extends AbstractMethod
         if (!$auth) {
             $logData = [
                 "order.id" => $payment->getOrder()->getIncrementId(),
-                "noauth" => true
+                "noauth" => true,
             ];
             $this->_ddlog->log("error", "capture error, no authorization transaction available", null, $logData);
             throw new Exception(
@@ -663,7 +663,7 @@ class Checkout extends AbstractMethod
         if ($this->getConfigData(Config::CAPTURE_ON) == 'nocapture') {
             $logData = [
                 "payment.id" => $payment_id,
-                "nocapture" => true
+                "nocapture" => true,
             ];
             $this->_ddlog->log("info", "bypass payment capture", null, $logData);
             return $this;
@@ -674,7 +674,7 @@ class Checkout extends AbstractMethod
             "amount" => $payment->formatAmount($this->getTabbyPrice($invoice, 'grand_total')),
             "tax_amount" => $payment->formatAmount($this->getTabbyPrice($invoice, 'tax_amount')),
             "shipping_amount" => $payment->formatAmount($this->getTabbyPrice($invoice, 'shipping_amount')),
-            "created_at" => null
+            "created_at" => null,
         ];
 
         $data['items'] = [];
@@ -685,13 +685,13 @@ class Checkout extends AbstractMethod
                     'description' => $item->getName() ?: '',
                     'quantity' => (int)$item->getQty(),
                     'unit_price' => $payment->formatAmount($this->getTabbyPrice($item, 'price_incl_tax')),
-                    'reference_id' => $item->getProductId() . '|' . $item->getSku()
+                    'reference_id' => $item->getProductId() . '|' . $item->getSku(),
                 ];
-            };
+            }
         }
 
         $logData = [
-            "payment.id" => $payment_id
+            "payment.id" => $payment_id,
         ];
         $this->_ddlog->log("info", "capture payment", null, $logData);
 
@@ -786,7 +786,7 @@ class Checkout extends AbstractMethod
 
         $data = [
             "capture_id" => $invoice->getTransactionId(),
-            "amount" => $payment->formatAmount($this->getTabbyPrice($creditmemo, 'grand_total'))
+            "amount" => $payment->formatAmount($this->getTabbyPrice($creditmemo, 'grand_total')),
         ];
 
         $data['items'] = [];
@@ -796,12 +796,12 @@ class Checkout extends AbstractMethod
                 'description' => $item->getName() ?: '',
                 'quantity' => (int)$item->getQty(),
                 'unit_price' => $payment->formatAmount($this->getTabbyPrice($creditmemo, 'price_incl_tax')),
-                'reference_id' => $item->getProductId() . '|' . $item->getSku()
+                'reference_id' => $item->getProductId() . '|' . $item->getSku(),
             ];
         }
 
         $logData = [
-            "payment.id" => $payment_id
+            "payment.id" => $payment_id,
         ];
         $this->_ddlog->log("info", "refund payment", null, $logData);
 
@@ -843,7 +843,7 @@ class Checkout extends AbstractMethod
     public function void(InfoInterface $payment)
     {
         $logData = [
-            "payment.id" => $payment->getParentTransactionId()
+            "payment.id" => $payment->getParentTransactionId(),
         ];
         $this->_ddlog->log("info", "void payment", null, $logData);
         $result = $this->_api->closePayment($payment->getOrder()->getStoreId(), $payment->getParentTransactionId());
@@ -1033,7 +1033,7 @@ class Checkout extends AbstractMethod
 
         if ($order->getId() && in_array($order->getState(), [
             \Magento\Sales\Model\Order::STATE_PENDING_PAYMENT,
-            \Magento\Sales\Model\Order::STATE_NEW
+            \Magento\Sales\Model\Order::STATE_NEW,
         ])) {
 
             if (!$payment->getAuthorizationTransaction()) {
@@ -1044,7 +1044,7 @@ class Checkout extends AbstractMethod
 
                 $this->_ddlog->log('info', 'authorize payment from ' . $source, null, [
                     'payment.id' => $paymentId,
-                    "order.reference_id" => $order->getIncrementId()
+                    "order.reference_id" => $order->getIncrementId(),
                 ]);
 
                 $payment->authorize(true, $order->getBaseGrandTotal());
@@ -1093,16 +1093,16 @@ class Checkout extends AbstractMethod
             } else {
                 $this->_ddlog->log('info', 'order not have auth transaction assigned', null, [
                     'payment.id' => $paymentId,
-                    "order.reference_id" => $order->getIncrementId()
+                    "order.reference_id" => $order->getIncrementId(),
                 ]);
             }
         } else {
             $this->_ddlog->log('info', 'order state is not valid for auth', null, [
                 'payment.id' => $paymentId,
                 "order.reference_id" => $order->getIncrementId(),
-                "order.state" => $order->getState()
+                "order.state" => $order->getState(),
             ]);
-        };
+        }
         return false;
     }
 
@@ -1154,7 +1154,7 @@ class Checkout extends AbstractMethod
                 $this->getInfoInstance()->getOrder()
             ),
             "merchant_urls" => $this->getMerchantUrls(),
-            "payment"       => $this->getSessionPaymentObject($this->getInfoInstance()->getOrder())
+            "payment"       => $this->getSessionPaymentObject($this->getInfoInstance()->getOrder()),
         ];
         // cancel order on any errors
         $redirectUrl = $this->_urlInterface->getUrl('tabby/result/failure');
@@ -1166,26 +1166,9 @@ class Checkout extends AbstractMethod
                 if (property_exists($result->configuration->available_products, $this->_codeTabby)) {
                     // register new payment id for order
                     $this->getInfoInstance()->setAdditionalInformation([
-                        self::PAYMENT_ID_FIELD => $result->payment->id
+                        self::PAYMENT_ID_FIELD => $result->payment->id,
                     ]);
                     $this->getInfoInstance()->save();
-/*
-                    $payment = $this->getInfoInstance();
-                    $payment->setTransactionId($result->payment->id);
-
-                    $transaction = $payment->addTransaction(
-                        \Magento\Sales\Model\Order\Payment\Transaction::TYPE_AUTH,
-                        $this->getOrder(),
-                        true
-                    );
-
-                    $transactionSave = $this->_transactionFactory
-                        ->create()
-                        ->addObject($payment)
-                        ->addObject($transaction);
-
-                    $transactionSave->save();
-*/
 
                     $redirectUrl = $result->configuration->available_products->{$this->_codeTabby}[0]->web_url;
                 } else {
@@ -1197,8 +1180,6 @@ class Checkout extends AbstractMethod
         } catch (\Exception $e) {
             $this->_ddlog->log("error", "createSession exception", $e, $data);
             // be silent, no exception require here. just redirect to checkout again
-            //throw new LocalizedException(__("Sorry, Tabby is unable to approve this purchase. ' .
-                //'Please use an alternative payment method for your order."));
         }
 
         return $redirectUrl;
@@ -1214,7 +1195,7 @@ class Checkout extends AbstractMethod
         return [
             "success"   => $this->_urlInterface->getUrl('tabby/result/success'),
             "cancel"    => $this->_urlInterface->getUrl('tabby/result/cancel'),
-            "failure"   => $this->_urlInterface->getUrl('tabby/result/failure')
+            "failure"   => $this->_urlInterface->getUrl('tabby/result/failure'),
         ];
     }
 
@@ -1250,23 +1231,23 @@ class Checkout extends AbstractMethod
             "buyer"     => [
                 "phone"     => $address ? $address->getTelephone() : '',
                 "email"     => $order->getCustomerEmail(),
-                "name"      => $order->getCustomerName()
+                "name"      => $order->getCustomerName(),
             ],
             "shipping_address" => [
                 "city"      => $address ? $address->getCity() : '',
                 "address"   => $address ? implode(PHP_EOL, $address->getStreet()) : '',
-                "zip"       => $address ? $address->getPostcode() : ''
+                "zip"       => $address ? $address->getPostcode() : '',
             ],
             "order"     => [
                 "tax_amount"        => $this->getTabbyPrice($order, 'tax_amount'),
                 "shipping_amount"   => $this->getTabbyPrice($order, 'shipping_amount'),
                 "discount_amount"   => $this->getTabbyPrice($order, 'discount_amount'),
                 "reference_id"      => $order->getIncrementId(),
-                "items"             => $this->getSessionOrderItems($order)
+                "items"             => $this->getSessionOrderItems($order),
             ],
             "meta"  => $this->_configModule->getPaymentObjectMetaFields(),
             "buyer_history"     => $this->buyerHistory->getBuyerHistoryObject($customer, $orderHistory),
-            "order_history"     => $this->orderHistory->limitOrderHistoryObject($orderHistory)
+            "order_history"     => $this->orderHistory->limitOrderHistoryObject($orderHistory),
         ];
     }
 
@@ -1292,7 +1273,7 @@ class Checkout extends AbstractMethod
                 'reference_id'  => $item->getSku(),
                 'image_url'     => $this->getSessionItemImageUrl($item),
                 'product_url'   => $item->getProduct()->getUrlInStore(),
-                'category'      => $this->getSessionCategoryName($item)
+                'category'      => $this->getSessionCategoryName($item),
             ];
         }
         return $items;

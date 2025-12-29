@@ -383,7 +383,7 @@ class Order extends AbstractHelper
                 $data = [
                     "payment.id" => $paymentId,
                     "payment.order.reference_id" => $incrementId,
-                    "auth.source" => $source
+                    "auth.source" => $source,
                 ];
                 $this->_ddlog->log("error", "could not find order", null, $data);
             }

@@ -3,10 +3,10 @@
 namespace Tabby\Checkout\Model\Api\Tabby;
 
 use Magento\Framework\Exception\LocalizedException;
-use Tabby\Checkout\Exception\NotFoundException;
 use Tabby\Checkout\Exception\NotAuthorizedException;
-use Tabby\Checkout\Model\Api\Tabby;
+use Tabby\Checkout\Exception\NotFoundException;
 use Tabby\Checkout\Model\Api\Http\Method as HttpMethod;
+use Tabby\Checkout\Model\Api\Tabby;
 
 class Webhooks extends Tabby
 {
@@ -61,7 +61,7 @@ class Webhooks extends Tabby
 
         $this->_ddlog->log("info", "check webhooks for " . $merchantCode, null, [
             'webhooks' => $webhooks,
-            'url' => $url
+            'url' => $url,
         ]);
 
         if (is_object($webhooks)
@@ -100,7 +100,7 @@ class Webhooks extends Tabby
                 $this->_ddlog->log("error", "Error creating webhook", $e, [
                     'code' => $merchantCode,
                     'url' => $url,
-                    'is_test' => $this->getIsTest($storeId)
+                    'is_test' => $this->getIsTest($storeId),
                 ]);
             }
         }
@@ -136,7 +136,7 @@ class Webhooks extends Tabby
 
         return $this->request($storeId, '/' . $data['id'], HttpMethod::METHOD_PUT, [
             'url' => $data['url'],
-            'is_test' => $data['is_test']
+            'is_test' => $data['is_test'],
         ]);
     }
 
@@ -162,7 +162,7 @@ class Webhooks extends Tabby
 
         return $this->request($storeId, '', HttpMethod::METHOD_POST, [
             'url' => $data['url'],
-            'is_test' => $data['is_test']
+            'is_test' => $data['is_test'],
         ]);
     }
 }

@@ -22,7 +22,7 @@ class Services implements \Magento\Framework\Option\ArrayInterface
         foreach (Config::ALLOWED_SERVICES as $key => $title) {
             $options[] = [
                 'value' => $key,
-                'label' => __($title)
+                'label' => __($title),
             ];
         }
 

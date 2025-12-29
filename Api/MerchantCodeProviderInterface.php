@@ -2,9 +2,9 @@
 
 namespace Tabby\Checkout\Api;
 
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Catalog\Api\Data\ProductInterface;
 
 /**
  * Interface for merchant code provider

@@ -34,7 +34,7 @@ class DescriptionType implements \Magento\Framework\Option\ArrayInterface
         return array_map(function ($key, $value) {
             return [
                 'value' => $key,
-                'label' => $value
+                'label' => $value,
             ];
         }, array_keys($this->toArray()), array_values($this->toArray()));
     }
@@ -50,7 +50,7 @@ class DescriptionType implements \Magento\Framework\Option\ArrayInterface
             self::OPTION_DESC_PW => __('PromoCardWide'),
             self::OPTION_DESC_P => __('PromoCard'),
             self::OPTION_DESC_TEXT => __('Text description'),
-            self::OPTION_DESC_NONE => __('Blanc description')
+            self::OPTION_DESC_NONE => __('Blanc description'),
         ];
         $options = [];
         foreach ($all as $value => $title) {

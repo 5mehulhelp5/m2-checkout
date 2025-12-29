@@ -2,14 +2,14 @@
 
 namespace Tabby\Checkout\Model;
 
+use Magento\Framework\Api\AttributeValueFactory;
+use Magento\Framework\Api\ExtensionAttributesFactory;
 use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\Model\AbstractExtensibleModel;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Registry;
 use Tabby\Checkout\Api\GuestOrderHistoryInformationInterface;
-use Magento\Framework\Api\AttributeValueFactory;
-use Magento\Framework\Api\ExtensionAttributesFactory;
 use Tabby\Checkout\Model\Checkout\Payment\OrderHistory;
 
 class GuestOrderHistoryInformation extends AbstractExtensibleModel implements GuestOrderHistoryInformationInterface

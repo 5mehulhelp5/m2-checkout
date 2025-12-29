@@ -11,11 +11,11 @@ use Magento\Framework\Model\Context;
 use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Registry;
 use Magento\Framework\Webapi\Rest\Request as RestRequest;
-use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\App\Emulation;
-use Tabby\Checkout\Model\Api\DdLog;
+use Magento\Store\Model\StoreManagerInterface;
 use Tabby\Checkout\Api\WebhookProcessorInterface;
 use Tabby\Checkout\Helper\Order;
+use Tabby\Checkout\Model\Api\DdLog;
 use Tabby\Checkout\Model\Api\Tabby\Payments as PaymentApi;
 
 class WebhookProcessor extends AbstractExtensibleModel implements WebhookProcessorInterface
@@ -116,7 +116,7 @@ class WebhookProcessor extends AbstractExtensibleModel implements WebhookProcess
             if (is_object($webhook)) {
                 $data = [
                     'payment.id' => $webhook->id,
-                    'content' => $webhook
+                    'content' => $webhook,
                 ];
                 if (!property_exists($webhook, 'order') || !is_object($webhook->order)
                     || !property_exists($webhook->order, 'reference_id')) {
@@ -149,7 +149,7 @@ class WebhookProcessor extends AbstractExtensibleModel implements WebhookProcess
         } finally {
             if ($emulation) {
                 $this->_emulation->stopEnvironmentEmulation();
-            };
+            }
         }
         return $result;
     }

@@ -1,8 +1,8 @@
 <?php
 namespace Tabby\Checkout\Setup;
 
-use Magento\Config\Model\ResourceModel\Config\Data\CollectionFactory;
 use Magento\Config\Model\ResourceModel\Config\Data as ConfigResourceData;
+use Magento\Config\Model\ResourceModel\Config\Data\CollectionFactory;
 use Magento\Framework\DB\FieldDataConverterFactory;
 use Magento\Framework\DB\Select\QueryModifierFactory;
 use Magento\Framework\Setup\ModuleContextInterface;
@@ -53,7 +53,7 @@ class UpgradeData implements UpgradeDataInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function upgrade(
         ModuleDataSetupInterface $setup,
@@ -63,7 +63,6 @@ class UpgradeData implements UpgradeDataInterface
             $this->updateDescriptionTypeFieldAndRemoveCardTheme($setup);
         }
     }
-
 
     /**
      * Upgrade to version 6.0.1
@@ -91,17 +90,17 @@ class UpgradeData implements UpgradeDataInterface
             [
                 'values' => [
                     'path' => [
-                        'payment/tabby_%/description_type'
-                    ]
-                ]
+                        'payment/tabby_%/description_type',
+                    ],
+                ],
             ]
         );
 
         $fieldDataConverter->convert(
             $setup->getConnection(),
             $setup->getTable('core_config_data'),
-           'config_id',
-           'value',
+            'config_id',
+            'value',
             $queryModifier
         );
     }

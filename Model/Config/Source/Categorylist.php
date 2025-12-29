@@ -1,8 +1,8 @@
 <?php
 namespace Tabby\Checkout\Model\Config\Source;
 
-use Magento\Framework\Option\ArrayInterface;
 use Magento\Catalog\Helper\Category;
+use Magento\Framework\Option\ArrayInterface;
 
 /**
  * Source model for category selection
@@ -62,7 +62,7 @@ class Categorylist implements ArrayInterface
         foreach ($arr as $key => $value) {
             $ret[] = [
                 'value' => $key,
-                'label' => $value
+                'label' => $value,
             ];
         }
 
@@ -110,7 +110,7 @@ class Categorylist implements ArrayInterface
         $subcategories = $categoryObj->getChildrenCategories();
 
         foreach ($subcategories as $subcategory) {
-            $this->categoryList[$subcategory->getEntityId()] = __($arrow. ' ' . $subcategory->getName());
+            $this->categoryList[$subcategory->getEntityId()] = __($arrow . ' ' . $subcategory->getName());
 
             if ($subcategory->hasChildren()) {
 

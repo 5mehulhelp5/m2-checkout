@@ -2,29 +2,26 @@
 
 namespace Tabby\Checkout\Model;
 
-// AbstractExtensibleModel
+use Magento\Authorization\Model\UserContextInterface;
+use Magento\Checkout\Model\Session;
+use Magento\Framework\Api\AttributeValueFactory;
+use Magento\Framework\Api\ExtensionAttributesFactory;
+use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\Model\AbstractExtensibleModel;
 use Magento\Framework\Model\Context;
-use Magento\Framework\Registry;
-use Magento\Framework\Api\ExtensionAttributesFactory;
-use Magento\Framework\Api\AttributeValueFactory;
 use Magento\Framework\Model\ResourceModel\AbstractResource;
-use Magento\Framework\Data\Collection\AbstractDb;
-// this class requirements
-use Tabby\Checkout\Api\SessionDataInterface;
-use Magento\Framework\Webapi\Rest\Request as RestRequest;
-use Tabby\Checkout\Model\Api\DdLog;
-use Magento\Store\Model\StoreManagerInterface;
-use Tabby\Checkout\Model\Api\Tabby\Checkout as CheckoutApi;
-use Tabby\Checkout\Gateway\Config\Config;
-use Tabby\Checkout\Model\Checkout\Payment\OrderHistory;
-use Tabby\Checkout\Model\Checkout\Payment\BuyerHistory;
-use Magento\Checkout\Model\Session;
-use Magento\Quote\Model\QuoteIdMaskFactory;
-use Magento\Quote\Model\QuoteFactory;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
-use Tabby\Checkout\Model\MerchantCodeProvider;
-use Magento\Authorization\Model\UserContextInterface;
+use Magento\Framework\Registry;
+use Magento\Framework\Webapi\Rest\Request as RestRequest;
+use Magento\Quote\Model\QuoteFactory;
+use Magento\Quote\Model\QuoteIdMaskFactory;
+use Magento\Store\Model\StoreManagerInterface;
+use Tabby\Checkout\Api\SessionDataInterface;
+use Tabby\Checkout\Gateway\Config\Config;
+use Tabby\Checkout\Model\Api\DdLog;
+use Tabby\Checkout\Model\Api\Tabby\Checkout as CheckoutApi;
+use Tabby\Checkout\Model\Checkout\Payment\BuyerHistory;
+use Tabby\Checkout\Model\Checkout\Payment\OrderHistory;
 
 class SessionData extends AbstractExtensibleModel implements SessionDataInterface
 {
@@ -108,6 +105,7 @@ class SessionData extends AbstractExtensibleModel implements SessionDataInterfac
      * @param QuoteIdMaskFactory $quoteIdMaskFactory
      * @param PriceCurrencyInterface $priceCurrencyInterface
      * @param MerchantCodeProvider $merchantCodeProvider
+     * @param UserContextInterface $userContext
      * @param Context $context
      * @param Registry $registry
      * @param ExtensionAttributesFactory $extensionFactory
@@ -129,7 +127,7 @@ class SessionData extends AbstractExtensibleModel implements SessionDataInterfac
         QuoteIdMaskFactory $quoteIdMaskFactory,
         PriceCurrencyInterface $priceCurrencyInterface,
         MerchantCodeProvider $merchantCodeProvider,
-	UserContextInterface $userContext,
+        UserContextInterface $userContext,
         Context $context,
         Registry $registry,
         ExtensionAttributesFactory $extensionFactory,
@@ -170,7 +168,7 @@ class SessionData extends AbstractExtensibleModel implements SessionDataInterfac
     {
         $quote = $this->_quoteFactory->create()->load($cartId);
 
-	if (!$this->userContext->getUserId() || ($quote->getCustomerId() != $this->userContext->getUserId())) {
+        if (!$this->userContext->getUserId() || ($quote->getCustomerId() != $this->userContext->getUserId())) {
             return ['status' => 'Acceess denied.'];
         }
         return $this->createSession($quote);
@@ -232,7 +230,7 @@ class SessionData extends AbstractExtensibleModel implements SessionDataInterfac
             return [[
                 "status"                => $session->status,
                 "payment_id"            => $session->payment->id,
-                "available_products"    => $session->configuration->available_products
+                "available_products"    => $session->configuration->available_products,
             ]];
         } catch (\Exception $e) {
             $this->_ddlog->log(
@@ -244,7 +242,7 @@ class SessionData extends AbstractExtensibleModel implements SessionDataInterfac
         }
 
         return [[
-            'status'    => 'rejected'
+            'status'    => 'rejected',
         ]];
     }
 
@@ -259,18 +257,20 @@ class SessionData extends AbstractExtensibleModel implements SessionDataInterfac
 
         $address = $quote->getShippingAddress();
         $address->collectShippingRates();
-    
+
         return [
             "amount"    => $this->getTabbyPrice($quote, 'grand_total'),
-            "currency"  => $this->getIsInLocalCurrency() ? $quote->getQuoteCurrencyCode() : $quote->getBaseCurrencyCode(),
+            "currency"  => $this->getIsInLocalCurrency()
+                ? $quote->getQuoteCurrencyCode()
+                : $quote->getBaseCurrencyCode(),
             "description" => $quote->getEntityId(),
             "order"     => [
                 "tax_amount"        => $this->getTabbyPrice($address, 'tax_amount'),
                 "shipping_amount"   => $this->getTabbyPrice($address, 'shipping_amount'),
                 "discount_amount"   => $this->getTabbyPrice($quote, 'discount_amount'),
                 "reference_id"      => $quote->getEntityId(),
-                "items"             => $this->getQuoteItems($quote)
-            ]
+                "items"             => $this->getQuoteItems($quote),
+            ],
         ];
     }
 
@@ -293,9 +293,7 @@ class SessionData extends AbstractExtensibleModel implements SessionDataInterfac
                     + $this->getTabbyPrice($item, 'tax_amount'),
                 'tax_amount'    => $this->getTabbyPrice($item, 'tax_amount'),
                 'reference_id'  => $item->getSku(),
-                //'image_url'     => $this->getSessionItemImageUrl($item),
                 'product_url'   => $item->getProduct()->getUrlInStore(),
-                //'category'      => $this->getSessionCategoryName($item)
             ];
         }
         return $items;

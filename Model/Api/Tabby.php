@@ -4,11 +4,11 @@ namespace Tabby\Checkout\Model\Api;
 
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\StoreManagerInterface;
-use Tabby\Checkout\Exception\NotFoundException;
 use Tabby\Checkout\Exception\NotAuthorizedException;
+use Tabby\Checkout\Exception\NotFoundException;
 use Tabby\Checkout\Gateway\Config\Config;
-use Tabby\Checkout\Model\Api\Http\Method as HttpMethod;
 use Tabby\Checkout\Model\Api\Http\Client as HttpClient;
+use Tabby\Checkout\Model\Api\Http\Method as HttpMethod;
 
 class Tabby
 {
@@ -183,6 +183,8 @@ class Tabby
      * @param string $url
      * @param HttpClient $client
      * @param array $requestData
+     * @param string $level
+     * @param string $msg
      * @return $this
      */
     protected function logRequest($url, $client, $requestData, $level = 'info', $msg = 'api call')
@@ -193,7 +195,7 @@ class Tabby
             "request.headers" => json_encode($this->_headers),
             "response.body" => $client->getBody(),
             "response.code" => $client->getStatus(),
-            "response.headers" => $client->getHeaders()
+            "response.headers" => $client->getHeaders(),
         ];
         $this->_ddlog->log($level, $msg, null, $logData);
 

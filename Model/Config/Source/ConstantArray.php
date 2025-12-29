@@ -19,7 +19,7 @@ class ConstantArray implements \Magento\Framework\Option\ArrayInterface
         foreach ($this->toArray() as $value => $label) {
             $result[] = [
                 'value' => $value,
-                'label' => $label
+                'label' => $label,
             ];
         }
         return $result;
@@ -35,7 +35,7 @@ class ConstantArray implements \Magento\Framework\Option\ArrayInterface
         $result = [];
         foreach (static::VALUES as $key => $label) {
             $result[$key] = __($label);
-        };
+        }
         return $result;
     }
 }

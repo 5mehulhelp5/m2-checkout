@@ -15,7 +15,7 @@ class BuyerHistory
     {
         return [
             "registered_since"  => $this->getRegisteredSince($customer),
-            "loyalty_level"     => $this->getLoyaltyLevel($order_history)
+            "loyalty_level"     => $this->getLoyaltyLevel($order_history),
         ];
     }
 
@@ -30,7 +30,7 @@ class BuyerHistory
         if ($customer) {
             $date = $customer->getCreatedAt();
             if ($date) {
-                return (new \DateTime($date))->format("c");
+                return new \DateTime($date)->format("c");
             }
         }
         return null;

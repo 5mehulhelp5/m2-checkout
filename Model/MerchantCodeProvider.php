@@ -2,12 +2,12 @@
 
 namespace Tabby\Checkout\Model;
 
-use Tabby\Checkout\Api\MerchantCodeProviderInterface;
-use Magento\Store\Model\StoreManagerInterface;
-use Tabby\Checkout\Gateway\Config\Config;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Tabby\Checkout\Api\MerchantCodeProviderInterface;
+use Tabby\Checkout\Gateway\Config\Config;
 
 class MerchantCodeProvider implements MerchantCodeProviderInterface
 {
@@ -35,25 +35,25 @@ class MerchantCodeProvider implements MerchantCodeProviderInterface
         $this->moduleConfig = $moduleConfig;
     }
 
-   /**
-    * @inheritdoc
-    */
+    /**
+     * @inheritdoc
+     */
     public function getMerchantCodeForProduct(ProductInterface $product) : string
     {
         return $this->getMerchantCode();
     }
 
-   /**
-    * @inheritdoc
-    */
+    /**
+     * @inheritdoc
+     */
     public function getMerchantCodeForCart(CartInterface $quote) : string
     {
         return $this->getMerchantCode();
     }
 
-   /**
-    * @inheritdoc
-    */
+    /**
+     * @inheritdoc
+     */
     public function getMerchantCodeForOrder(OrderInterface $order) : string
     {
         return $this->getMerchantCode();
