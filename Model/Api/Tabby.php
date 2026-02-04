@@ -111,7 +111,7 @@ class Tabby
                 $msg = "Server returned: " . $client->getStatus() . '. ';
                 if (!empty($body)) {
                     $result = json_decode($body);
-                    $msg .= $result->errorType;
+                    $msg .= property_exists($result, 'errorType') ? $result->errorType : '';
                     if (property_exists($result, 'error')) {
                         $msg .= ': ' . $result->error;
                         if ($result->error == 'already closed' && preg_match("#close$#", $endpoint)) {
